@@ -8,6 +8,8 @@ using System.Security.Claims;
 using OAT.Core.Interfaces;
 using OAT.Database.Models.Identity;
 using OAT.Core.Services;
+using Microsoft.AspNetCore.Authentication;
+using Azure.Core;
 
 namespace OAT.AuthApi.Controllers
 {
@@ -26,14 +28,21 @@ namespace OAT.AuthApi.Controllers
         public async Task<IActionResult> Exchange()
         {
             var oidcRequest = HttpContext.GetOpenIddictServerRequest();
+
             if (oidcRequest.IsPasswordGrantType())
-                return await TokensForPasswordGrantType(oidcRequest);
+            {
+                var claimsPrincipal = await _authService.GetClaimsPrincipalByPasswordGrantType(oidcRequest);
+                return AuthResult(claimsPrincipal);
+            }
+                
 
             if (oidcRequest.IsRefreshTokenGrantType())
             {
-                // return tokens for refresh token flow
+                var authenticateResult =
+                    await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                var claimsPrincipal = authenticateResult.Principal;
+                return AuthResult(claimsPrincipal);
             }
-
 
             return BadRequest(new OpenIddictResponse
             {
@@ -41,10 +50,8 @@ namespace OAT.AuthApi.Controllers
             });
         }
 
-        private async Task<IActionResult> TokensForPasswordGrantType(OpenIddictRequest request)
+        private IActionResult AuthResult(ClaimsPrincipal? claimsPrincipal)
         {
-            var claimsPrincipal = await _authService.GetClaimsPrincipalByPasswordGrantType(request);
-
             return claimsPrincipal != null
                 ? SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
                 : Unauthorized();

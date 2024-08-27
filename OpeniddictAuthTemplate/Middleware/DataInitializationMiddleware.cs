@@ -74,7 +74,8 @@ namespace OAT.AuthApi.Middleware
                     Permissions =
                     {
                         OpenIddictConstants.Permissions.Endpoints.Token,
-                        OpenIddictConstants.Permissions.GrantTypes.Password
+                        OpenIddictConstants.Permissions.GrantTypes.Password,
+                        OpenIddictConstants.Permissions.GrantTypes.RefreshToken
                     }
                 }).GetAwaiter().GetResult();
             }
