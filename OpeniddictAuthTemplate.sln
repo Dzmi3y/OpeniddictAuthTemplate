@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthApi", "OpeniddictAuthTemplate\AuthApi.csproj", "{65BF9372-2B55-4DE8-860C-A06D2212C7C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAT.AuthApi", "OpeniddictAuthTemplate\OAT.AuthApi.csproj", "{65BF9372-2B55-4DE8-860C-A06D2212C7C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAT.Core", "Core\OAT.Core.csproj", "{A39D7AEA-6E73-4CAB-BF0F-534876AF4657}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAT.Database", "Database\OAT.Database.csproj", "{AA6EBD1E-FFE6-4687-97E2-5372B3BCFBA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{65BF9372-2B55-4DE8-860C-A06D2212C7C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65BF9372-2B55-4DE8-860C-A06D2212C7C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65BF9372-2B55-4DE8-860C-A06D2212C7C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A39D7AEA-6E73-4CAB-BF0F-534876AF4657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A39D7AEA-6E73-4CAB-BF0F-534876AF4657}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A39D7AEA-6E73-4CAB-BF0F-534876AF4657}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A39D7AEA-6E73-4CAB-BF0F-534876AF4657}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA6EBD1E-FFE6-4687-97E2-5372B3BCFBA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA6EBD1E-FFE6-4687-97E2-5372B3BCFBA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA6EBD1E-FFE6-4687-97E2-5372B3BCFBA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA6EBD1E-FFE6-4687-97E2-5372B3BCFBA8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

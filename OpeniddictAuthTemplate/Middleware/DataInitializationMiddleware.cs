@@ -1,11 +1,10 @@
-﻿using AuthApi.config;
-using AuthApi.Config;
-using AuthApi.Data;
-using AuthApi.Identity;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using OAT.AuthApi.Config;
+using OAT.Database;
+using OAT.Database.Models.Identity;
 using OpenIddict.Abstractions;
 
-namespace AuthApi.Middleware
+namespace OAT.AuthApi.Middleware
 {
     public class DataInitializationMiddleware
     {
@@ -35,13 +34,13 @@ namespace AuthApi.Middleware
                     NormalizedName = initUser.NormalizedRoleName
                 };
 
-            var user = new User
+                var user = new User
                 {
                     Username = initUser.UserName,
                     UserRoles = new List<UserRole>
-                    {
-                        new UserRole { Role = role}
-                    }
+                        {
+                            new UserRole { Role = role }
+                        }
                 };
 
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();

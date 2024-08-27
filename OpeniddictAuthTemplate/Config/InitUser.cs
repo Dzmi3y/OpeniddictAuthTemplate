@@ -1,4 +1,4 @@
-﻿namespace AuthApi.Config
+﻿namespace OAT.AuthApi.Config
 {
     public class InitUser
     {

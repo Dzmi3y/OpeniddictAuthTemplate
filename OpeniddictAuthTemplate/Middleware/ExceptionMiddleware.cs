@@ -1,7 +1,8 @@
 ﻿using System.Net;
-using System.Text.Json;
+using Newtonsoft.Json;
 
-namespace AuthApi.Middleware
+
+namespace OAT.AuthApi.Middleware
 {
     public class ExceptionMiddleware
     {
@@ -22,14 +23,14 @@ namespace AuthApi.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message,ex);
+                _logger.LogError(ex.Message, ex);
                 await HandleExceptionAsync(context, ex);
             }
         }
 
         private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            var result = JsonSerializer.Serialize(new { error = exception });
+            var result = JsonConvert.SerializeObject(new { error = exception });
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 

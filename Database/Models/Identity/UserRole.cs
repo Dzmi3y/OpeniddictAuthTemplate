@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AuthApi.Identity
+namespace OAT.Database.Models.Identity
 {
     [Table(nameof(UserRole))]
     public class UserRole

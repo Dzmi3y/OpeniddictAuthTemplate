@@ -1,16 +1,6 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using OpenIddict.Abstractions;
-using OpenIddict.Server.AspNetCore;
-using System.Security.Claims;
-using AuthApi.Identity;
-using AuthApi.Config;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace AuthApi.Controllers
+namespace OAT.AuthApi.Controllers
 {
     public class AccountController : ControllerBase
     {
@@ -21,6 +11,6 @@ namespace AuthApi.Controllers
 
             return Ok();
         }
-        
+
     }
 }

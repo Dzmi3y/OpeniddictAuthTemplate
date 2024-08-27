@@ -5,9 +5,9 @@ using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using System.Security.Claims;
-using AuthApi.Identity;
+using OAT.Database.Models.Identity;
 
-namespace AuthApi.Controllers
+namespace OAT.AuthApi.Controllers
 {
     public class AuthenticationController : ControllerBase
     {

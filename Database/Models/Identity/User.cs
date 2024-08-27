@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace AuthApi.Identity
+namespace OAT.Database.Models.Identity
 {
     [Table(nameof(User))]
     public class User

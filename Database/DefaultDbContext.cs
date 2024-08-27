@@ -1,7 +1,7 @@
-﻿using AuthApi.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using OAT.Database.Models.Identity;
 
-namespace AuthApi.Data
+namespace OAT.Database
 {
     public class DefaultDbContext : DbContext
     {

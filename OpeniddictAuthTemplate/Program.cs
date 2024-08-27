@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
-using AuthApi.Data;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
-using AuthApi.Identity;
-using AuthApi.Middleware;
+using OAT.AuthApi.Middleware;
+using OAT.Database;
+using OAT.Database.Models.Identity;
+using OAT.Core.IdentityStores;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -133,7 +134,7 @@ builder.Services.AddIdentity<User, Role>()
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseMiddleware<DataInitializationMiddleware>();
+
 
 app.UseCors("AllowAll");
 
@@ -144,9 +145,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseMiddleware<DataInitializationMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 
 app.MapControllers();

@@ -1,4 +1,4 @@
-namespace AuthApi
+namespace OAT.AuthApi
 {
     public class WeatherForecast
     {
