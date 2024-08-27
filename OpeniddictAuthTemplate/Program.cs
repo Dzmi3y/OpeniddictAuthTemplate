@@ -7,6 +7,8 @@ using OAT.AuthApi.Middleware;
 using OAT.Database;
 using OAT.Database.Models.Identity;
 using OAT.Core.IdentityStores;
+using OAT.Core.Interfaces;
+using OAT.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -130,6 +132,8 @@ builder.Services.AddIdentity<User, Role>()
     .AddUserStore<UserStore>()
     .AddRoleStore<RoleStore>()
     .AddUserManager<UserManager<User>>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 

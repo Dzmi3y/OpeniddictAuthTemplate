@@ -5,19 +5,19 @@ using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using System.Security.Claims;
+using OAT.Core.Interfaces;
 using OAT.Database.Models.Identity;
+using OAT.Core.Services;
 
 namespace OAT.AuthApi.Controllers
 {
     public class AuthenticationController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly IAuthService _authService;
 
-        public AuthenticationController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AuthenticationController(IAuthService authService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _authService = authService;
         }
 
         [HttpPost("~/connect/token")]
@@ -25,7 +25,6 @@ namespace OAT.AuthApi.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> Exchange()
         {
-
             var oidcRequest = HttpContext.GetOpenIddictServerRequest();
             if (oidcRequest.IsPasswordGrantType())
                 return await TokensForPasswordGrantType(oidcRequest);
@@ -44,40 +43,11 @@ namespace OAT.AuthApi.Controllers
 
         private async Task<IActionResult> TokensForPasswordGrantType(OpenIddictRequest request)
         {
-            var user = await _userManager.FindByNameAsync(request.Username);
-            if (user == null)
-                return Unauthorized();
+            var claimsPrincipal = await _authService.GetClaimsPrincipalByPasswordGrantType(request);
 
-            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
-            if (signInResult.Succeeded)
-            {
-                var identity = new ClaimsIdentity(
-                    TokenValidationParameters.DefaultAuthenticationType,
-                    OpenIddictConstants.Claims.Name,
-                    OpenIddictConstants.Claims.Role);
-
-                identity.AddClaim(OpenIddictConstants.Claims.Subject, user.Id.ToString(), OpenIddictConstants.Destinations.AccessToken);
-                identity.AddClaim(OpenIddictConstants.Claims.Username, user.Username, OpenIddictConstants.Destinations.AccessToken);
-
-                foreach (var userRole in user.UserRoles)
-                {
-                    identity.AddClaim(OpenIddictConstants.Claims.Role, userRole.Role.NormalizedName, OpenIddictConstants.Destinations.AccessToken);
-                }
-
-                var claimsPrincipal = new ClaimsPrincipal(identity);
-                claimsPrincipal.SetScopes(new string[]
-                {
-                        OpenIddictConstants.Scopes.Roles,
-                        OpenIddictConstants.Scopes.OfflineAccess,
-                        OpenIddictConstants.Scopes.Email,
-                        OpenIddictConstants.Scopes.Profile,
-                });
-
-                return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-            }
-            else
-                return Unauthorized();
-
+            return claimsPrincipal != null
+                ? SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
+                : Unauthorized();
         }
     }
 }
