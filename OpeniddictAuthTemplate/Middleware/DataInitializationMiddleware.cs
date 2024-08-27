@@ -13,27 +13,34 @@ namespace AuthApi.Middleware
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IConfiguration _configuration;
 
-        public DataInitializationMiddleware(RequestDelegate next, IServiceScopeFactory serviceScopeFactory, 
+        public DataInitializationMiddleware(RequestDelegate next, IServiceScopeFactory serviceScopeFactory,
             IConfiguration configuration)
         {
             _next = next;
-            _serviceScopeFactory= serviceScopeFactory;
-            _configuration= configuration;
+            _serviceScopeFactory = serviceScopeFactory;
+            _configuration = configuration;
         }
 
-        private void CreateSeedUser()
+        private async Task CreateSeedUser()
         {
             var initUser = _configuration.GetSection("InitUser").Get<InitUser>();
-            if (initUser!=null)
+            if (initUser != null)
             {
                 using var scope = _serviceScopeFactory.CreateScope();
-                var user = new User
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
+                var role = await roleManager.FindByNameAsync(initUser.NormalizedRoleName);
+                role ??= new Role
+                {
+                    Name = initUser.RoleName,
+                    NormalizedName = initUser.NormalizedRoleName
+                };
+
+            var user = new User
                 {
                     Username = initUser.UserName,
                     UserRoles = new List<UserRole>
                     {
-                        new UserRole { Role = new Role { Name = initUser.RoleName, 
-                            NormalizedName = initUser.NormalizedRoleName } }
+                        new UserRole { Role = role}
                     }
                 };
 

@@ -34,12 +34,15 @@ namespace AuthApi.Identity
         {
         }
 
-        public Task<User> FindByIdAsync(string userId, CancellationToken cancellationToken)
+        public async Task<User?> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            return await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .SingleOrDefaultAsync(u => u.Id.ToString() == userId, cancellationToken); ;
         }
 
-        public async Task<User> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+        public async Task<User?> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
             return await _context.Users
                 .Include(u => u.UserRoles)

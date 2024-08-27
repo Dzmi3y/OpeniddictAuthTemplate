@@ -1,12 +1,23 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AuthApi.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthApi.Identity
 {
     public class RoleStore : IRoleStore<Role>
     {
-        public Task<IdentityResult> CreateAsync(Role role, CancellationToken cancellationToken)
+        private readonly DefaultDbContext _context;
+
+        public RoleStore(DefaultDbContext context)
         {
-            throw new System.NotImplementedException();
+            _context = context;
+        }
+
+        public async Task<IdentityResult> CreateAsync(Role role, CancellationToken cancellationToken)
+        {
+            _context.Roles.Add(role);
+            await _context.SaveChangesAsync(cancellationToken);
+            return IdentityResult.Success;
         }
 
         public Task<IdentityResult> DeleteAsync(Role role, CancellationToken cancellationToken)
@@ -18,14 +29,22 @@ namespace AuthApi.Identity
         {
         }
 
-        public Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
+        public async Task<Role?> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+
+            return await _context.Roles
+                .Include(r => r.UserRoles)
+                .ThenInclude(ur => ur.User)
+                .SingleOrDefaultAsync(r => r.Id.ToString() ==  roleId, cancellationToken);;
         }
 
-        public Task<Role> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        public async Task<Role?> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            return await _context.Roles
+                .Include(r => r.UserRoles)
+                .ThenInclude(ur => ur.User)
+                .SingleOrDefaultAsync(r => r.NormalizedName == normalizedRoleName, 
+                    cancellationToken);
         }
 
         public Task<string> GetNormalizedRoleNameAsync(Role role, CancellationToken cancellationToken)

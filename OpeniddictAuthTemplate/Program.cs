@@ -85,12 +85,14 @@ builder.Services.AddOpenIddict()
     {
         options.SetTokenEndpointUris("/connect/token");
         options.SetUserinfoEndpointUris("/connect/userinfo");
+        
 
         options.AllowPasswordFlow();
         options.AllowRefreshTokenFlow();
 
         options.UseReferenceAccessTokens();
         options.UseReferenceRefreshTokens();
+       
 
 
         options.RegisterScopes(OpenIddictConstants.Permissions.Scopes.Email,
@@ -107,7 +109,8 @@ builder.Services.AddOpenIddict()
         options.AddDevelopmentEncryptionCertificate()
             .AddDevelopmentSigningCertificate();
 
-        options.UseAspNetCore().EnableTokenEndpointPassthrough();
+        options.UseAspNetCore().EnableTokenEndpointPassthrough()
+            .EnableAuthorizationEndpointPassthrough();
     })
     .AddValidation(options =>
     {
