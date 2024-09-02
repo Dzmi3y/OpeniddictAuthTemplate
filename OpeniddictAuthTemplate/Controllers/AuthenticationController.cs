@@ -29,12 +29,11 @@ namespace OAT.AuthApi.Controllers
         {
             var oidcRequest = HttpContext.GetOpenIddictServerRequest();
 
-            if (oidcRequest.IsPasswordGrantType())
+           if (oidcRequest.IsPasswordGrantType())
             {
                 var claimsPrincipal = await _authService.GetClaimsPrincipalByPasswordGrantType(oidcRequest);
                 return AuthResult(claimsPrincipal);
             }
-                
 
             if (oidcRequest.IsRefreshTokenGrantType())
             {

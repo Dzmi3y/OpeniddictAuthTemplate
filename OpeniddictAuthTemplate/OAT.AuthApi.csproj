@@ -24,4 +24,8 @@
     <ProjectReference Include="..\Database\OAT.Database.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Contracts\Responses\" />
+  </ItemGroup>
+
 </Project>

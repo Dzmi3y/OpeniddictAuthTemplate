@@ -95,7 +95,6 @@ builder.Services.AddOpenIddict()
 
         options.UseReferenceAccessTokens();
         options.UseReferenceRefreshTokens();
-       
 
 
         options.RegisterScopes(OpenIddictConstants.Permissions.Scopes.Email,
@@ -134,6 +133,8 @@ builder.Services.AddIdentity<User, Role>()
     .AddUserManager<UserManager<User>>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+
 
 var app = builder.Build();
 
