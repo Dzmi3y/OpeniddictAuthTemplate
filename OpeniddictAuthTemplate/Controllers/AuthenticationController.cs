@@ -1,18 +1,14 @@
 ﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+using OAT.Core.Interfaces;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using System.Security.Claims;
-using OAT.Core.Interfaces;
-using OAT.Database.Models.Identity;
-using OAT.Core.Services;
-using Microsoft.AspNetCore.Authentication;
-using Azure.Core;
 
 namespace OAT.AuthApi.Controllers
 {
+
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -22,6 +18,7 @@ namespace OAT.AuthApi.Controllers
             _authService = authService;
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost("~/connect/token")]
         [Consumes("application/x-www-form-urlencoded")]
         [Produces("application/json")]
@@ -29,7 +26,7 @@ namespace OAT.AuthApi.Controllers
         {
             var oidcRequest = HttpContext.GetOpenIddictServerRequest();
 
-           if (oidcRequest.IsPasswordGrantType())
+            if (oidcRequest.IsPasswordGrantType())
             {
                 var claimsPrincipal = await _authService.GetClaimsPrincipalByPasswordGrantType(oidcRequest);
                 return AuthResult(claimsPrincipal);
@@ -54,6 +51,7 @@ namespace OAT.AuthApi.Controllers
             return claimsPrincipal != null
                 ? SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
                 : Unauthorized();
+
         }
     }
 }

@@ -9,6 +9,8 @@ using OAT.Database.Models.Identity;
 using OAT.Core.IdentityStores;
 using OAT.Core.Interfaces;
 using OAT.Core.Services;
+using System.Text.Json;
+using OAT.AuthApi.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,13 +25,17 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+{
+    x.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
     c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "AuthApi", Version = "v1" });
+        c.DocumentFilter<SwaggerDocumentFilter>();
         c.AddSecurityDefinition(
             "oauth",
             new OpenApiSecurityScheme
@@ -71,8 +77,8 @@ builder.Services.AddSwaggerGen(
 
 builder.Services.AddDbContext<DefaultDbContext>(options =>
 {
-    options.UseSqlServer( builder.Configuration.GetConnectionString("DefaultConnectionString"));
-    options.UseOpenIddict(); 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString"));
+    options.UseOpenIddict();
 });
 
 builder.Services.Configure<IdentityOptions>(options =>
@@ -88,7 +94,7 @@ builder.Services.AddOpenIddict()
     {
         options.SetTokenEndpointUris("/connect/token");
         options.SetUserinfoEndpointUris("/connect/userinfo");
-        
+
 
         options.AllowPasswordFlow();
         options.AllowRefreshTokenFlow();
