@@ -8,7 +8,6 @@ using System.Security.Claims;
 
 namespace OAT.AuthApi.Controllers
 {
-
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthService _authService;

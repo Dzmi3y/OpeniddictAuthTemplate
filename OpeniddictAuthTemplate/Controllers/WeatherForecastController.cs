@@ -5,7 +5,6 @@ namespace OAT.AuthApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -20,6 +19,7 @@ namespace OAT.AuthApi.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {

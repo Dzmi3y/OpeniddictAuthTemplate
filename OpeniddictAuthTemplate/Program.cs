@@ -1,16 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using OpenIddict.Abstractions;
-using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
+using OAT.AuthApi.Config;
 using OAT.AuthApi.Middleware;
-using OAT.Database;
-using OAT.Database.Models.Identity;
 using OAT.Core.IdentityStores;
 using OAT.Core.Interfaces;
 using OAT.Core.Services;
-using System.Text.Json;
-using OAT.AuthApi.Config;
+using OAT.Database;
+using OAT.Database.Models.Identity;
+using OpenIddict.Abstractions;
+using OpenIddict.Validation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,55 +25,39 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddControllers().AddJsonOptions(x =>
-{
-    x.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-});
+builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(
-    c =>
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Auth API", Version = "v1" });
+    options.DocumentFilter<SwaggerDocumentFilter>();
+    options.AddSecurityDefinition("Bearer",
+        new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Put 'Bearer <your_access_token>'",
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey
+        });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "AuthApi", Version = "v1" });
-        c.DocumentFilter<SwaggerDocumentFilter>();
-        c.AddSecurityDefinition(
-            "oauth",
+        {
             new OpenApiSecurityScheme
             {
-
-                Flows = new OpenApiOAuthFlows
+                Reference = new OpenApiReference
                 {
-                    ClientCredentials = new OpenApiOAuthFlow
-                    {
-                        Scopes = new Dictionary<string, string>
-                        {
-                            ["api"] = "api scope description"
-                        },
-                        TokenUrl = new Uri("https://demo.identityserver.io/connect/token"),
-                    },
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
                 },
-                OpenIdConnectUrl = new Uri("/.well-known/openid-configuration", UriKind.Relative),
+                Scheme = "oauth2",
+                Name = "Bearer",
                 In = ParameterLocation.Header,
-                Name = HeaderNames.Authorization,
-                Type = SecuritySchemeType.OpenIdConnect
-            }
-        );
-        c.AddSecurityRequirement(
-            new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                            { Type = ReferenceType.SecurityScheme, Id = "oauth" },
-                    },
-                    Array.Empty<string>()
-                }
-            }
-        );
-    }
-);
-
+            },
+            new List<string>()
+        }
+    });
+});
 
 builder.Services.AddDbContext<DefaultDbContext>(options =>
 {
@@ -93,12 +77,8 @@ builder.Services.AddOpenIddict()
     .AddServer(options =>
     {
         options.SetTokenEndpointUris("/connect/token");
-        options.SetUserinfoEndpointUris("/connect/userinfo");
-
-
         options.AllowPasswordFlow();
         options.AllowRefreshTokenFlow();
-
         options.UseReferenceAccessTokens();
         options.UseReferenceRefreshTokens();
 
@@ -124,13 +104,27 @@ builder.Services.AddOpenIddict()
     {
         options.UseLocalServer();
         options.UseAspNetCore();
+        options.UseSystemNetHttp();
     });
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = OpenIddictConstants.Schemes.Bearer;
+    options.DefaultAuthenticateScheme = OpenIddictConstants.Schemes.Bearer;
     options.DefaultChallengeScheme = OpenIddictConstants.Schemes.Bearer;
+
 });
+
+
+builder.Services.AddAuthorization(options =>
+{
+    var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
+        OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+    defaultAuthorizationPolicyBuilder =
+        defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+    options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+});
+
 
 builder.Services.AddIdentity<User, Role>()
     .AddSignInManager()
@@ -141,12 +135,9 @@ builder.Services.AddIdentity<User, Role>()
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 
-
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
-
-
 app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
@@ -159,11 +150,6 @@ app.UseHttpsRedirection();
 app.UseMiddleware<DataInitializationMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
-
-
-
 app.MapControllers();
-
-
 
 app.Run();
