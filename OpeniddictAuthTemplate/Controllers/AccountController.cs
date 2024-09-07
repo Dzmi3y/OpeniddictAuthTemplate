@@ -4,7 +4,7 @@ using OAT.Core.Interfaces;
 
 namespace OAT.AuthApi.Controllers
 {
-    
+
     [Route("[controller]/[action]")]
     public class AccountController : ControllerBase
     {

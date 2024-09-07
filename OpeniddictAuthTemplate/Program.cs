@@ -77,6 +77,7 @@ builder.Services.AddOpenIddict()
     .AddServer(options =>
     {
         options.SetTokenEndpointUris("/connect/token");
+        options.SetLogoutEndpointUris("/connect/logout");
         options.AllowPasswordFlow();
         options.AllowRefreshTokenFlow();
         options.UseReferenceAccessTokens();
@@ -97,8 +98,10 @@ builder.Services.AddOpenIddict()
         options.AddDevelopmentEncryptionCertificate()
             .AddDevelopmentSigningCertificate();
 
-        options.UseAspNetCore().EnableTokenEndpointPassthrough()
-            .EnableAuthorizationEndpointPassthrough();
+        options.UseAspNetCore()
+            .EnableTokenEndpointPassthrough()
+            .EnableAuthorizationEndpointPassthrough()
+            .EnableLogoutEndpointPassthrough();
     })
     .AddValidation(options =>
     {

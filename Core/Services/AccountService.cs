@@ -1,12 +1,7 @@
-﻿using OAT.Core.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using OAT.Database.Models.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using OAT.Core.Interfaces;
+using OAT.Database.Models.Identity;
 
 namespace OAT.Core.Services
 {

@@ -5,41 +5,12 @@ namespace OAT.AuthApi.Config
 {
     public class SwaggerDocumentFilter : IDocumentFilter
     {
-        public const string VersionEndPoint = "/connect/token";
+        public const string TokenEndPoint = "/connect/token";
+        public const string LogOutEndPoint = "/connect/logout";
 
         public void Apply(OpenApiDocument openApiDocument, DocumentFilterContext context)
         {
-            var operation = new OpenApiOperation();
-            operation.Tags.Add(new OpenApiTag { Name = "Authentication" });
-
-            var properties = new Dictionary<string, OpenApiSchema>
-            {
-                { "access_token", new OpenApiSchema() { Type = "string" } },
-                { "token_type", new OpenApiSchema() { Type = "string" } },
-                { "expires_in", new OpenApiSchema() { Type = "number" } },
-                { "scope", new OpenApiSchema() { Type = "string" } },
-                { "refresh_token", new OpenApiSchema() { Type = "string" } }
-            };
-
-            var response = new OpenApiResponse
-            {
-                Description = "Success"
-            };
-
-            response.Content.Add("application/json", new OpenApiMediaType
-            {
-                Schema = new OpenApiSchema
-                {
-                    Type = "object",
-                    AdditionalPropertiesAllowed = true,
-                    Properties = properties,
-                }
-            });
-
-            operation.Responses.Add("200", response);
-
-
-            operation.RequestBody = new OpenApiRequestBody
+            OpenApiRequestBody tokenEndPointRequestBody = new OpenApiRequestBody
             {
                 Required = true,
                 Content = new Dictionary<string, OpenApiMediaType>
@@ -75,16 +46,82 @@ namespace OAT.AuthApi.Config
                                 {
                                     Type = "string"
                                 }
-
                             }
                         }
                     }
                 }
             };
+            Dictionary<string, OpenApiSchema> tokenEndPointProperties = new Dictionary<string, OpenApiSchema>
+            {
+                { "access_token", new OpenApiSchema() { Type = "string" } },
+                { "token_type", new OpenApiSchema() { Type = "string" } },
+                { "expires_in", new OpenApiSchema() { Type = "number" } },
+                { "scope", new OpenApiSchema() { Type = "string" } },
+                { "refresh_token", new OpenApiSchema() { Type = "string" } }
+            };
+
+            OpenApiRequestBody logOutEndPointRequestBody = new OpenApiRequestBody
+            {
+                Required = true,
+                Content = new Dictionary<string, OpenApiMediaType>
+                {
+                    ["application/x-www-form-urlencoded"] = new OpenApiMediaType
+                    {
+                        Schema = new OpenApiSchema
+                        {
+                            Type = "object",
+                            Properties = new Dictionary<string, OpenApiSchema>
+                            {
+                                ["client_id"] = new OpenApiSchema
+                                {
+                                    Type = "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            Dictionary<string, OpenApiSchema> logOutEndPointProperties = new Dictionary<string, OpenApiSchema>
+            {
+
+            };
+
+            var tokenEndpointPathItem = GetEndPointPathItem("Authentication",
+                "Success", tokenEndPointRequestBody, tokenEndPointProperties);
+            var logOutEndPointPathItem = GetEndPointPathItem("LogOut",
+                "Success", logOutEndPointRequestBody);
+
+            openApiDocument?.Paths.Add(TokenEndPoint, tokenEndpointPathItem);
+            openApiDocument?.Paths.Add(LogOutEndPoint, logOutEndPointPathItem);
+        }
+
+        private static OpenApiPathItem GetEndPointPathItem(string name,
+           string responseDescription, OpenApiRequestBody requestBody,
+           Dictionary<string, OpenApiSchema>? properties = null)
+        {
+            var operation = new OpenApiOperation();
+            operation.Tags.Add(new OpenApiTag { Name = name });
+
+            var response = new OpenApiResponse
+            {
+                Description = responseDescription
+            };
+
+            response.Content.Add("application/json", new OpenApiMediaType
+            {
+                Schema = new OpenApiSchema
+                {
+                    Type = "object",
+                    AdditionalPropertiesAllowed = true,
+                    Properties = properties,
+                }
+            });
+            operation.Responses.Add("200", response);
+            operation.RequestBody = requestBody;
 
             var pathItem = new OpenApiPathItem();
             pathItem.AddOperation(OperationType.Post, operation);
-            openApiDocument?.Paths.Add(VersionEndPoint, pathItem);
+            return pathItem;
         }
     }
 }

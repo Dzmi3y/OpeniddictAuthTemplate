@@ -74,6 +74,7 @@ namespace OAT.AuthApi.Middleware
                     Permissions =
                     {
                         OpenIddictConstants.Permissions.Endpoints.Token,
+                        OpenIddictConstants.Permissions.Endpoints.Logout,
                         OpenIddictConstants.Permissions.GrantTypes.Password,
                         OpenIddictConstants.Permissions.GrantTypes.RefreshToken
                     }

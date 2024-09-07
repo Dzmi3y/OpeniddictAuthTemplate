@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OAT.Core.Interfaces;
 using OpenIddict.Abstractions;
@@ -51,6 +52,24 @@ namespace OAT.AuthApi.Controllers
                 ? SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
                 : Unauthorized();
 
+        }
+
+        [Authorize]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpPost("~/connect/logout")]
+        public async Task<IActionResult> Logout()
+        {
+            string? userId = User.GetClaim(OpenIddictConstants.Claims.Subject);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("User ID cannot be null or empty");
+            }
+
+            await HttpContext.SignOutAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+            await _authService.RevokeTokensAsync(userId);
+            return SignOut(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
     }
 }

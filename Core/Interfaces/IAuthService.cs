@@ -6,5 +6,6 @@ namespace OAT.Core.Interfaces
     public interface IAuthService
     {
         Task<ClaimsPrincipal?> GetClaimsPrincipalByPasswordGrantType(OpenIddictRequest request);
+        Task RevokeTokensAsync(string userId);
     }
 }

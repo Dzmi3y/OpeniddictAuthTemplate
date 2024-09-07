@@ -3,19 +3,25 @@ using Microsoft.IdentityModel.Tokens;
 using OAT.Core.Interfaces;
 using OAT.Database.Models.Identity;
 using OpenIddict.Abstractions;
+using OpenIddict.Core;
+using OpenIddict.EntityFrameworkCore.Models;
 using System.Security.Claims;
+
 
 namespace OAT.Core.Services
 {
-    public class AuthService: IAuthService
+    public class AuthService : IAuthService
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly OpenIddictTokenManager<OpenIddictEntityFrameworkCoreToken> _openIddictTokenManager;
 
-        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager,
+            OpenIddictTokenManager<OpenIddictEntityFrameworkCoreToken> openIddictTokenManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _openIddictTokenManager = openIddictTokenManager;
         }
 
         public async Task<ClaimsPrincipal?> GetClaimsPrincipalByPasswordGrantType(OpenIddictRequest request)
@@ -53,7 +59,17 @@ namespace OAT.Core.Services
             }
             else
                 return null;
+        }
 
+        public async Task RevokeTokensAsync(string userId)
+        {
+            var tokens =  
+                _openIddictTokenManager.FindBySubjectAsync(userId);
+
+            await foreach (var token in tokens)
+            {
+                await _openIddictTokenManager.TryRevokeAsync(token);
+            }
         }
     }
 }
