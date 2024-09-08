@@ -38,9 +38,9 @@ namespace OAT.Core.Services
                     OpenIddictConstants.Claims.Name,
                     OpenIddictConstants.Claims.Role);
 
-                identity.AddClaim(OpenIddictConstants.Claims.Subject, user.Id.ToString(), OpenIddictConstants.Destinations.AccessToken);
-                identity.AddClaim(OpenIddictConstants.Claims.Username, user.Username, OpenIddictConstants.Destinations.AccessToken);
 
+                identity.AddClaim(OpenIddictConstants.Claims.Subject, user.Id.ToString(), OpenIddictConstants.Destinations.AccessToken);
+                identity.AddClaim(OpenIddictConstants.Claims.Name, user.Username, OpenIddictConstants.Destinations.AccessToken);
                 foreach (var userRole in user.UserRoles)
                 {
                     identity.AddClaim(OpenIddictConstants.Claims.Role, userRole.Role.NormalizedName, OpenIddictConstants.Destinations.AccessToken);
@@ -52,8 +52,27 @@ namespace OAT.Core.Services
                     OpenIddictConstants.Scopes.Roles,
                     OpenIddictConstants.Scopes.OfflineAccess,
                     OpenIddictConstants.Scopes.Email,
-                    OpenIddictConstants.Scopes.Profile,
+                    OpenIddictConstants.Scopes.Profile
                 });
+
+
+                claimsPrincipal.SetDestinations(claim =>
+                {
+                    switch (claim.Type)
+                    {
+                        case OpenIddictConstants.Claims.Subject:
+                        case OpenIddictConstants.Claims.Name:
+                        case OpenIddictConstants.Claims.Role:
+                            return new[] { OpenIddictConstants.Destinations.AccessToken, OpenIddictConstants.Destinations.IdentityToken };
+                        default:
+                            return new[] { OpenIddictConstants.Destinations.AccessToken };
+                    }
+                });
+
+
+
+
+
 
                 return claimsPrincipal;
             }

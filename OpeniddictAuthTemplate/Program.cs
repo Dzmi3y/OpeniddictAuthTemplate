@@ -77,12 +77,12 @@ builder.Services.AddOpenIddict()
     .AddServer(options =>
     {
         options.SetTokenEndpointUris("/connect/token");
+        options.SetAuthorizationEndpointUris("/connect/authorize");
         options.SetLogoutEndpointUris("/connect/logout");
         options.AllowPasswordFlow();
         options.AllowRefreshTokenFlow();
         options.UseReferenceAccessTokens();
         options.UseReferenceRefreshTokens();
-
 
         options.RegisterScopes(OpenIddictConstants.Permissions.Scopes.Email,
                         OpenIddictConstants.Permissions.Scopes.Profile,

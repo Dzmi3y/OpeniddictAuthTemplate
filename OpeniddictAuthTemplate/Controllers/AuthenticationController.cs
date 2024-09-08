@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OAT.AuthApi.Contracts.Responses;
 using OAT.Core.Interfaces;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
 
 namespace OAT.AuthApi.Controllers
@@ -18,6 +20,8 @@ namespace OAT.AuthApi.Controllers
             _authService = authService;
         }
 
+        [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(SignInResult))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, Type = typeof(UnauthorizedResult))]
         [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost("~/connect/token")]
         [Consumes("application/x-www-form-urlencoded")]
@@ -61,6 +65,7 @@ namespace OAT.AuthApi.Controllers
         {
             string? userId = User.GetClaim(OpenIddictConstants.Claims.Subject);
 
+            
             if (string.IsNullOrEmpty(userId))
             {
                 return BadRequest("User ID cannot be null or empty");
