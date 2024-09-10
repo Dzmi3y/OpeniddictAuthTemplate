@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { privateRoutes, publicRoutes, RouteNames } from '../../router'
+import React from 'react'
 
 const AppRouter = () => {
     const authToken = false //todo
