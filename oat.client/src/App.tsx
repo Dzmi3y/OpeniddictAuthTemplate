@@ -1,8 +1,5 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-
-import AppRouter from './components/common/AppRouting'
-import { RouteNames } from './router'
-import HomePage from './pages/HomePage'
+import { BrowserRouter } from 'react-router-dom'
+import AppRouter from './components/AppRouting'
 
 function App() {
     return (

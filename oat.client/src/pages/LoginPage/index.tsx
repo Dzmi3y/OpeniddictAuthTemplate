@@ -1,5 +1,9 @@
-import React from 'react'
+import { ArrowButton } from '../../components/ArrowButton'
 
 export default function index() {
-    return <div></div>
+    return (
+        <>
+            <ArrowButton>Login</ArrowButton>
+        </>
+    )
 }

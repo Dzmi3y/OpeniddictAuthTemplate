@@ -1,32 +1,32 @@
-import js from '@eslint/js'
+import ParserTypescriptEslint from '@typescript-eslint/parser'
+import PluginImport from 'eslint-plugin-import'
+import PluginJest from 'eslint-plugin-jest'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
-import { ESLint } from 'eslint'
-import tsParser from '@typescript-eslint/parser'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 
-export default new ESLint({
-    ignorePatterns: ['dist'],
-    overrideConfig: {
-        extends: [
-            'eslint:recommended',
-            'plugin:@typescript-eslint/recommended',
-        ],
-        files: ['**/*.{ts,tsx}'],
-        parser: tsParser,
-        parserOptions: {
-            ecmaVersion: 2020,
+export default [
+    {
+        files: ['**/*.{ts,tsx,css}'],
+        languageOptions: {
+            ecmaVersion: 2021,
             sourceType: 'module',
-            ecmaFeatures: {
-                jsx: true,
+            globals: {
+                ...globals.browser,
+                ...globals.es2021,
+            },
+            parser: ParserTypescriptEslint,
+            parserOptions: {
+                project: ['./tsconfig.json'],
             },
         },
-        globals: globals.browser,
         plugins: {
             'react-hooks': reactHooks,
             'react-refresh': reactRefresh,
             '@typescript-eslint': tsPlugin,
+            import: PluginImport,
+            jest: PluginJest,
         },
         rules: {
             ...reactHooks.configs.recommended.rules,
@@ -35,5 +35,13 @@ export default new ESLint({
                 { allowConstantExport: true },
             ],
         },
+        settings: {
+            'import/resolver': {
+                ...PluginImport.configs.typescript.settings['import/resolver'],
+                typescript: {
+                    project: ['tsconfig.json'],
+                },
+            },
+        },
     },
-})
+]
