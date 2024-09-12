@@ -3,12 +3,14 @@ import { media, ScreenSizeEnum } from '../../media'
 
 export const Container = styled.div`
     display: flex;
+    max-width: 478px;
+    //justify-content: stretch;
 `
 
 export const StyledField = styled.input`
     background-color: #c0dbea;
     border-radius: 4px 0px 0px 4px;
-    width: 441px;
+    width: 100%;
     height: 46px;
     font-size: 14px;
     border: none;

@@ -1,10 +1,15 @@
 import styled from 'styled-components'
+import { media, ScreenSizeEnum } from '../../media'
 
 export const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
+    margin-top: 0;
+    ${media.lessThan(ScreenSizeEnum.SM)`
+        height: calc(100vh - 4rem);
+    `}
 `
 export const Card = styled.div`
     background-color: #ffffff;
@@ -13,6 +18,14 @@ export const Card = styled.div`
     border-radius: 40px;
     display: flex;
     justify-content: space-between;
+    ${media.lessThan(ScreenSizeEnum.XL)`
+        justify-content: center;
+        padding-left: 20px;
+        padding-right: 20px;
+    `}
+    ${media.lessThan(ScreenSizeEnum.SM)`
+        height: auto;
+    `}
 `
 
 export const ControlsContainer = styled.div`
@@ -21,12 +34,18 @@ export const ControlsContainer = styled.div`
 `
 
 export const DecorColumn = styled.div`
+    ${media.lessThan(ScreenSizeEnum.XL)`
+        display: none;
+    `}
     background-color: #c0dbea;
     width: 489px;
-    height: 849px;
     border-radius: 40px;
 `
 export const CactusImg = styled.img`
+    ${media.lessThan(ScreenSizeEnum.XL)`
+        display: none;
+    `}
+
     position: absolute;
     bottom: 62px;
     right: 90px;
@@ -78,6 +97,10 @@ export const CactusImg = styled.img`
     }
 `
 export const GirlImg = styled.img`
+    ${media.lessThan(ScreenSizeEnum.XL)`
+        display: none;
+    `}
+
     position: absolute;
     right: 60px;
     bottom: 0;

@@ -1,9 +1,10 @@
 import styled from 'styled-components'
+import { media, ScreenSizeEnum } from '../../media'
 
 export const StyledField = styled.input`
     background-color: #c0dbea;
     border-radius: 4px;
-    width: 478px;
+    max-width: 478px;
     height: 46px;
     font-size: 14px;
     border: none;
