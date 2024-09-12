@@ -30,7 +30,7 @@ const AppRouter = () => {
             ))}
             <Route
                 path={RouteNames.ANY}
-                element={<Navigate to={RouteNames.HOME} replace />}
+                element={<Navigate to={RouteNames.LOGIN} replace />}
             />
         </Routes>
     )
