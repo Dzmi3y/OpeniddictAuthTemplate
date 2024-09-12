@@ -4,7 +4,7 @@ import { media, ScreenSizeEnum } from '../../media'
 export const StyledField = styled.input`
     background-color: #c0dbea;
     border-radius: 4px;
-    max-width: 478px;
+    width: 478px;
     height: 46px;
     font-size: 14px;
     border: none;
@@ -16,4 +16,8 @@ export const StyledField = styled.input`
         outline: 0;
         outline-offset: 0;
     }
+    ${media.lessThan(ScreenSizeEnum.SM)`
+        width: auto;
+        max-width: 478px;
+    `}
 `

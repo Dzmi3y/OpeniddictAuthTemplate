@@ -3,8 +3,11 @@ import { media, ScreenSizeEnum } from '../../media'
 
 export const Container = styled.div`
     display: flex;
-    max-width: 478px;
-    //justify-content: stretch;
+    width: 498px;
+    ${media.lessThan(ScreenSizeEnum.SM)`
+        width: auto;
+        max-width: 478px;
+    `}
 `
 
 export const StyledField = styled.input`

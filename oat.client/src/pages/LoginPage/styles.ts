@@ -8,6 +8,7 @@ export const Container = styled.div`
     flex-direction: column;
     margin-top: 106px;
     margin-left: 88px;
+    z-index: 1;
 
     ${media.lessThan(ScreenSizeEnum.XL)`
         margin-left: 0px;

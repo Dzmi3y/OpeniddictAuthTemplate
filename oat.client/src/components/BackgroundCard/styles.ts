@@ -18,13 +18,15 @@ export const Card = styled.div`
     border-radius: 40px;
     display: flex;
     justify-content: space-between;
+
     ${media.lessThan(ScreenSizeEnum.XL)`
         justify-content: center;
         padding-left: 20px;
-        padding-right: 20px;
+        padding-right: 20px; 
     `}
     ${media.lessThan(ScreenSizeEnum.SM)`
         height: auto;
+        display: block;
     `}
 `
 
