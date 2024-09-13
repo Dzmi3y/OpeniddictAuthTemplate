@@ -2,41 +2,41 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OAT.AuthApi.Contracts.Responses;
 using OAT.Core.Interfaces;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using Resources;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
 
 namespace OAT.AuthApi.Controllers
 {
-    public class AuthenticationController : ControllerBase
+    public class OpeniddictController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly IOpeniddictService _openiddictService;
 
-        public AuthenticationController(IAuthService authService)
+        public OpeniddictController(IOpeniddictService openiddictService)
         {
-            _authService = authService;
+            _openiddictService = openiddictService;
         }
 
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(SignInResult))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Type = typeof(UnauthorizedResult))]
         [ApiExplorerSettings(IgnoreApi = true)]
-        [HttpPost("~/connect/token")]
+        [HttpPost("~/Account/GetToken")]
         [Consumes("application/x-www-form-urlencoded")]
         [Produces("application/json")]
         public async Task<IActionResult> Exchange()
         {
-            var oidcRequest = HttpContext.GetOpenIddictServerRequest();
+            var oidRequest = HttpContext.GetOpenIddictServerRequest();
 
-            if (oidcRequest.IsPasswordGrantType())
+            if (oidRequest.IsPasswordGrantType())
             {
-                var claimsPrincipal = await _authService.GetClaimsPrincipalByPasswordGrantType(oidcRequest);
+                var claimsPrincipal = await _openiddictService.GetClaimsPrincipalByPasswordGrantType(oidRequest);
                 return AuthResult(claimsPrincipal);
             }
 
-            if (oidcRequest.IsRefreshTokenGrantType())
+            if (oidRequest.IsRefreshTokenGrantType())
             {
                 var authenticateResult =
                     await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
@@ -60,20 +60,19 @@ namespace OAT.AuthApi.Controllers
 
         [Authorize]
         [ApiExplorerSettings(IgnoreApi = true)]
-        [HttpPost("~/connect/logout")]
+        [HttpPost("~/Account/Logout")]
         public async Task<IActionResult> Logout()
         {
             string? userId = User.GetClaim(OpenIddictConstants.Claims.Subject);
 
-            
             if (string.IsNullOrEmpty(userId))
             {
-                return BadRequest("User ID cannot be null or empty");
+                return BadRequest(Resource.IncorrectUserId);
             }
 
             await HttpContext.SignOutAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
-            await _authService.RevokeTokensAsync(userId);
+            await _openiddictService.RevokeTokensAsync(userId);
             return SignOut(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
     }

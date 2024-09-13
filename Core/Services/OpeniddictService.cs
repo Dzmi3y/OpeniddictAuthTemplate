@@ -10,13 +10,13 @@ using System.Security.Claims;
 
 namespace OAT.Core.Services
 {
-    public class AuthService : IAuthService
+    public class OpeniddictService : IOpeniddictService
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly OpenIddictTokenManager<OpenIddictEntityFrameworkCoreToken> _openIddictTokenManager;
 
-        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager,
+        public OpeniddictService(UserManager<User> userManager, SignInManager<User> signInManager,
             OpenIddictTokenManager<OpenIddictEntityFrameworkCoreToken> openIddictTokenManager)
         {
             _userManager = userManager;
@@ -69,11 +69,6 @@ namespace OAT.Core.Services
                     }
                 });
 
-
-
-
-
-
                 return claimsPrincipal;
             }
             else
@@ -82,7 +77,7 @@ namespace OAT.Core.Services
 
         public async Task RevokeTokensAsync(string userId)
         {
-            var tokens =  
+            var tokens =
                 _openIddictTokenManager.FindBySubjectAsync(userId);
 
             await foreach (var token in tokens)

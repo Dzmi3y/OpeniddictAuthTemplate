@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -11,23 +12,13 @@ using OAT.Database;
 using OAT.Database.Models.Identity;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
-});
-
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Auth API", Version = "v1" });
@@ -76,9 +67,8 @@ builder.Services.AddOpenIddict()
     .AddCore(options => options.UseEntityFrameworkCore().UseDbContext<DefaultDbContext>())
     .AddServer(options =>
     {
-        options.SetTokenEndpointUris("/connect/token");
-        options.SetAuthorizationEndpointUris("/connect/authorize");
-        options.SetLogoutEndpointUris("/connect/logout");
+        options.SetTokenEndpointUris("/Account/GetToken");
+        options.SetLogoutEndpointUris("/Account/Logout");
         options.AllowPasswordFlow();
         options.AllowRefreshTokenFlow();
         options.UseReferenceAccessTokens();
@@ -100,7 +90,6 @@ builder.Services.AddOpenIddict()
 
         options.UseAspNetCore()
             .EnableTokenEndpointPassthrough()
-            .EnableAuthorizationEndpointPassthrough()
             .EnableLogoutEndpointPassthrough();
     })
     .AddValidation(options =>
@@ -118,7 +107,6 @@ builder.Services.AddAuthentication(options =>
 
 });
 
-
 builder.Services.AddAuthorization(options =>
 {
     var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
@@ -128,20 +116,40 @@ builder.Services.AddAuthorization(options =>
     options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
 });
 
-
 builder.Services.AddIdentity<User, Role>()
     .AddSignInManager()
     .AddUserStore<UserStore>()
     .AddRoleStore<RoleStore>()
     .AddUserManager<UserManager<User>>();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IOpeniddictService, OpeniddictService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+
+var kestrelData = builder.Configuration.GetSection("Kestrel").Get <KestrelData> ();
+var pfxPassword = Environment.GetEnvironmentVariable("PFX_PASSWORD");
+
+builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+{
+    serverOptions.Listen(IPAddress.Loopback, kestrelData.HttpPort);
+    serverOptions.Listen(IPAddress.Loopback, kestrelData.HttpsPort, listenOptions =>
+    {
+        listenOptions.UseHttps(kestrelData.CertificatePath, pfxPassword);
+    });
+});
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.KnownProxies.Add(IPAddress.Parse(kestrelData.ProxyServerIP));
+});
 
 var app = builder.Build();
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
 {
@@ -149,7 +157,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 app.UseMiddleware<DataInitializationMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();

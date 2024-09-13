@@ -4,6 +4,7 @@ using OAT.AuthApi.Contracts.Requests;
 using OAT.AuthApi.Contracts.Responses;
 using OAT.Core.Interfaces;
 using OpenIddict.Abstractions;
+using Resources;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace OAT.AuthApi.Controllers
@@ -25,12 +26,12 @@ namespace OAT.AuthApi.Controllers
 
             if (identityResult == null)
             {
-                return BadRequest("User already exists");
+                return BadRequest(Resource.UserExistError);
             }
 
             if (identityResult.Succeeded)
             {
-                return Ok("User has been successfully created");
+                return Ok(Resource.UserCreatedInfo);
             }
 
             return BadRequest(identityResult.Errors.FirstOrDefault());
@@ -46,12 +47,12 @@ namespace OAT.AuthApi.Controllers
             
             if (string.IsNullOrEmpty(id))
             {
-                return BadRequest("User ID cannot be null or empty");
+                return BadRequest(Resource.IncorrectUserId);
             }
 
             if (User.Identity is null)
             {
-                return BadRequest("User identity is not available");
+                return BadRequest(Resource.UserIsNotavailable);
             }
 
             var userData = new UserDataResponse

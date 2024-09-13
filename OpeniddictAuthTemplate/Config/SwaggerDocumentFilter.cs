@@ -5,8 +5,8 @@ namespace OAT.AuthApi.Config
 {
     public class SwaggerDocumentFilter : IDocumentFilter
     {
-        public const string TokenEndPoint = "/connect/token";
-        public const string LogOutEndPoint = "/connect/logout";
+        public const string TokenEndPoint = "/Account/GetToken";
+        public const string LogOutEndPoint = "/Account/Logout";
 
         public void Apply(OpenApiDocument openApiDocument, DocumentFilterContext context)
         {
@@ -81,14 +81,10 @@ namespace OAT.AuthApi.Config
                     }
                 }
             };
-            Dictionary<string, OpenApiSchema> logOutEndPointProperties = new Dictionary<string, OpenApiSchema>
-            {
 
-            };
-
-            var tokenEndpointPathItem = GetEndPointPathItem("Authentication",
+            var tokenEndpointPathItem = GetEndPointPathItem("Account",
                 "Success", tokenEndPointRequestBody, tokenEndPointProperties);
-            var logOutEndPointPathItem = GetEndPointPathItem("LogOut",
+            var logOutEndPointPathItem = GetEndPointPathItem("Account",
                 "Success", logOutEndPointRequestBody);
 
             openApiDocument?.Paths.Add(TokenEndPoint, tokenEndpointPathItem);
