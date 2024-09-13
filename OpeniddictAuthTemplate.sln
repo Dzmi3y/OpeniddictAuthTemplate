@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAT.AuthApi", "OpeniddictAuthTemplate\OAT.AuthApi.csproj", "{65BF9372-2B55-4DE8-860C-A06D2212C7C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAT.AuthApi", "OAT.AuthApi\OAT.AuthApi.csproj", "{65BF9372-2B55-4DE8-860C-A06D2212C7C3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAT.Core", "Core\OAT.Core.csproj", "{A39D7AEA-6E73-4CAB-BF0F-534876AF4657}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAT.Core", "OAT.Core\OAT.Core.csproj", "{A39D7AEA-6E73-4CAB-BF0F-534876AF4657}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAT.Database", "Database\OAT.Database.csproj", "{AA6EBD1E-FFE6-4687-97E2-5372B3BCFBA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAT.Database", "OAT.Database\OAT.Database.csproj", "{AA6EBD1E-FFE6-4687-97E2-5372B3BCFBA8}"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "OAT.Client", "OAT.Client\OAT.Client.esproj", "{93F1A530-86B6-4250-A7E1-8BBF57E06983}"
 EndProject
