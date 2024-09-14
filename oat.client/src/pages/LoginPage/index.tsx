@@ -39,20 +39,19 @@ const LoginPage: React.FC<{ authStore: IAuthStore }> = inject('authStore')(
             setFormData(newData)
         }
 
-        const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault()
 
             if (dataValidation(formData)) {
-                authStore
-                    .login(formData.username, formData.password)
-                    .then((response) => {
-                        console.log('47')
-                        console.log(response)
-                    })
-                    .catch((error) => {
-                        console.log('49')
-                        console.log(error)
-                    })
+                let requestInfo = await authStore.login(
+                    formData.username,
+                    formData.password
+                )
+                if (requestInfo.isSuccessful) {
+                    //todo redirect to Homepage
+                } else {
+                    setErrorMessage(requestInfo.message)
+                }
             }
         }
 

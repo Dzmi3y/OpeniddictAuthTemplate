@@ -8,9 +8,7 @@ export class AuthService {
     static async login(
         tokenRequest: TokenRequest
     ): Promise<AxiosResponse<TokenResponse>> {
-        console.log(tokenRequest)
         const data = qs.stringify(tokenRequest)
-        console.log(data)
 
         return ApiService.api.post<TokenResponse>('/account/gettoken', data)
     }

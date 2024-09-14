@@ -2,11 +2,14 @@ import { makeAutoObservable } from 'mobx'
 import { AuthData } from '../models/AuthData'
 import { AuthService } from '../services/authService'
 import { TokenRequest } from '../models/Requests/TokenRequest'
+import { AxiosError, AxiosResponse } from 'axios'
+import { TokenResponse } from '../models/Responses/TokenResponse'
+import ApiRequestInfo from '../models/ApiRequestInfo'
 
 export interface IAuthStore {
     authData: AuthData
     setAuthData: (authData: AuthData) => void
-    login: (username: string, password: string) => Promise<void>
+    login: (username: string, password: string) => Promise<ApiRequestInfo>
 }
 
 class AuthStore implements IAuthStore {
@@ -28,7 +31,10 @@ class AuthStore implements IAuthStore {
         localStorage.authData = JSON.stringify(authData)
     }
 
-    login = async (username: string, password: string) => {
+    login = async (
+        username: string,
+        password: string
+    ): Promise<ApiRequestInfo> => {
         try {
             const tokenRequest: TokenRequest = {
                 username: username,
@@ -38,22 +44,25 @@ class AuthStore implements IAuthStore {
                 client_secret: '499D56FA-B47B-5199-BA61-B298D431C318',
                 refresh_token: '',
             }
-            console.log(tokenRequest)
-            AuthService.login(tokenRequest)
-                .then((response) => {
-                    console.log(response)
-                    let authData: AuthData = {
-                        accessToken: response.data.access_token,
-                        refreshToken: response.data.refresh_token,
-                    }
-                    this.setAuthData(authData)
-                    console.log(response.data)
-                })
-                .catch((error) => {
-                    console.error(error)
-                })
+            let axiosResponse: AxiosResponse<TokenResponse> =
+                await AuthService.login(tokenRequest)
+            if (axiosResponse.status === 200) {
+                let authData: AuthData = {
+                    accessToken: axiosResponse.data.access_token,
+                    refreshToken: axiosResponse.data.refresh_token,
+                }
+                this.setAuthData(authData)
+            }
+
+            return new ApiRequestInfo(true)
         } catch (error) {
             console.error('Login failed', error)
+            let status = (error as AxiosError).status
+            if (status !== undefined && status === 401) {
+                return new ApiRequestInfo(false, 'Invalid username or password')
+            } else {
+                return new ApiRequestInfo(false, 'Server is not available')
+            }
         }
     }
 
