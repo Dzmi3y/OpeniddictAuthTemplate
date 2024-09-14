@@ -19,6 +19,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+var clientUrl = builder.Configuration.GetValue<string>("ClientUrl") ?? string.Empty;
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder =>
+        {
+            builder.WithOrigins(clientUrl)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Auth API", Version = "v1" });
@@ -125,7 +137,7 @@ builder.Services.AddIdentity<User, Role>()
 builder.Services.AddScoped<IOpeniddictService, OpeniddictService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 
-var kestrelData = builder.Configuration.GetSection("Kestrel").Get <KestrelData> ();
+var kestrelData = builder.Configuration.GetSection("Kestrel").Get<KestrelData>();
 var pfxPassword = Environment.GetEnvironmentVariable("PFX_PASSWORD");
 
 builder.WebHost.ConfigureKestrel((context, serverOptions) =>
@@ -158,6 +170,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<DataInitializationMiddleware>();
+app.UseHttpsRedirection();
+app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
