@@ -3,6 +3,8 @@ import qs from 'qs'
 import { ApiService } from './apiService'
 import { TokenRequest } from '../models/Requests/TokenRequest'
 import { TokenResponse } from '../models/Responses/TokenResponse'
+import { UserDataResponse } from '../models/Responses/UserDataResponse'
+import { LogOutRequest } from '../models/Requests/LogOutRequest'
 
 export class AuthService {
     static async login(
@@ -25,9 +27,12 @@ export class AuthService {
     //     })
     // }
 
-    // static async logout(refreshToken: string): Promise<void> {
-    //     return ApiService.api.post('/Account/SignOut', { refreshToken })
-    // }
+    static async logout<logOutRequest>(
+        logOutRequest: LogOutRequest
+    ): Promise<void> {
+        const data = qs.stringify(logOutRequest)
+        ApiService.api.post('/account/logout', data)
+    }
 
     // static async regenerateNewTokens(
     //     refreshToken: string
@@ -35,7 +40,7 @@ export class AuthService {
     //     return ApiService.api.post('/Account/Refresh', { refreshToken })
     // }
 
-    // static async getAccountInfo(): Promise<AxiosResponse<AccountResponse>> {
-    //     return ApiService.api.get('/Account/Me')
-    // }
+    static async getAccountInfo(): Promise<AxiosResponse<UserDataResponse>> {
+        return ApiService.api.get<UserDataResponse>('/account/getuserdata')
+    }
 }

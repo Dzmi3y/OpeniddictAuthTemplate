@@ -1,9 +1,4 @@
-import axios, {
-    AxiosInstance,
-    AxiosRequestConfig,
-    InternalAxiosRequestConfig,
-} from 'axios'
-import { AuthService } from './authService'
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import authStore from '../store/AuthStore'
 export class ApiService {
     static api: AxiosInstance
@@ -19,7 +14,6 @@ export class ApiService {
                 const token = authStore.authData.accessToken
                 if (!!token && token !== '') {
                     config.headers.Authorization = `Bearer ${token}`
-                    console.log(token)
                 } else {
                     console.error('Token is invalide')
                 }

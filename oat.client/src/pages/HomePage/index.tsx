@@ -1,23 +1,38 @@
-import { inject, observer } from 'mobx-react'
+import React, { useState } from 'react'
+import { AuthService } from '../../services/authService'
 import { IAuthStore } from '../../store/AuthStore'
-import React from 'react'
-import { ApiService } from '../../services/apiService'
+import { inject, observer } from 'mobx-react'
+import { RouteNames } from '../../router'
+import { useNavigate } from 'react-router-dom'
+import { Button, Container, Label } from './styles'
 
-const HomePage: React.FC = () => {
-    ApiService.api
-        .get('/account/getuserdata')
-        .then((r) => {
-            console.log(r)
-        })
-        .catch((e) => {
-            console.error(e)
-        })
+const HomePage: React.FC<{ authStore: IAuthStore }> = inject('authStore')(
+    observer(({ authStore }) => {
+        const navigate = useNavigate()
+        const [username, setUsername] = useState<string>()
 
-    return (
-        <>
-            <h1>Hello</h1>
-        </>
-    )
-}
+        AuthService.getAccountInfo()
+            .then((response) => {
+                setUsername(response.data.name)
+            })
+            .catch((error) => {
+                console.error(error)
+                logout()
+            })
+
+        const logout = () => {
+            authStore.logout().then(() => {
+                navigate(RouteNames.LOGIN)
+            })
+        }
+
+        return (
+            <Container>
+                <Label>Hello {username}</Label>
+                <Button onClick={logout}>logout</Button>
+            </Container>
+        )
+    })
+)
 
 export default HomePage

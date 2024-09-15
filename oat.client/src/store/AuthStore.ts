@@ -5,11 +5,13 @@ import { TokenRequest } from '../models/Requests/TokenRequest'
 import { AxiosError, AxiosResponse } from 'axios'
 import { TokenResponse } from '../models/Responses/TokenResponse'
 import ApiRequestInfo from '../models/ApiRequestInfo'
+import { LogOutRequest } from '../models/Requests/LogOutRequest'
 
 export interface IAuthStore {
     authData: AuthData
     setAuthData: (authData: AuthData) => void
     login: (username: string, password: string) => Promise<ApiRequestInfo>
+    logout: () => Promise<void>
 }
 
 class AuthStore implements IAuthStore {
@@ -66,14 +68,18 @@ class AuthStore implements IAuthStore {
         }
     }
 
-    // logout = async () => {
-    //     try {
-    //         await AuthService.logout();
-    //         this.setAuthData({} as AuthData);
-    //     } catch (error) {
-    //         console.error('Logout failed', error);
-    //     }
-    // }
+    logout = async (): Promise<void> => {
+        try {
+            const logOutRequest: LogOutRequest = {
+                client_secret: '499D56FA-B47B-5199-BA61-B298D431C318',
+            }
+
+            await AuthService.logout(logOutRequest)
+            this.setAuthData({} as AuthData)
+        } catch (error) {
+            console.error('Logout failed', error)
+        }
+    }
 }
 
 const authStore = new AuthStore()
