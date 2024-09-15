@@ -8,6 +8,11 @@
     line-height: 1.5;
     font-weight: 400;
 
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+
     color: #000000;
     background: linear-gradient(
         to right,

@@ -6,7 +6,8 @@ export const Container = styled.div`
     justify-content: center;
     align-items: center;
     position: relative;
-    margin-top: 0;
+    margin-left: 20px;
+    margin-right: 20px;
     ${media.lessThan(ScreenSizeEnum.SM)`
         height: calc(100vh - 4rem);
     `}
@@ -50,18 +51,17 @@ export const CactusImg = styled.img`
 
     position: absolute;
     bottom: 62px;
-    right: 90px;
     z-index: 0;
     width: 198px;
     height: 550px;
     @keyframes motionAnimation {
         0% {
-            right: 90px;
+            margin-left: 1100px;
             bottom: 62px;
             transform: scale(1);
         }
         30% {
-            right: 85px;
+            margin-left: 1120px;
             bottom: 60px;
             transform: scale(0.9);
         }
@@ -70,13 +70,13 @@ export const CactusImg = styled.img`
             transform: scale(1.4);
         }
         100% {
-            right: 150px;
+            margin-left: 900px;
             bottom: 130px;
             transform: scale(1.4);
         }
     }
     &.registerPage {
-        right: 150px;
+        margin-left: 900px;
         bottom: 130px;
         transform: scale(1.4);
     }
@@ -87,7 +87,7 @@ export const CactusImg = styled.img`
     }
 
     &.loginPage {
-        right: 90px;
+        margin-left: 1100px;
         bottom: 62px;
         transform: scale(1);
     }
@@ -104,7 +104,7 @@ export const GirlImg = styled.img`
     `}
 
     position: absolute;
-    right: 60px;
+    margin-left: 600px;
     bottom: 0;
     z-index: 0;
     width: 778px;
