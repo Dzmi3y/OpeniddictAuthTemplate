@@ -68,7 +68,6 @@ const LoginPage: React.FC<{ authStore: IAuthStore }> = inject('authStore')(
             let message: string = ''
             let areFieldsEmpty: boolean =
                 isNullOrEmpty(data.username) || isNullOrEmpty(data.password)
-            console.log(data)
             message = areFieldsEmpty ? 'There are empty fields' : ''
             setErrorMessage(message)
 

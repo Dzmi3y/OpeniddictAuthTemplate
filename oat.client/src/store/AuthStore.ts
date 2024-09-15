@@ -11,6 +11,7 @@ export interface IAuthStore {
     authData: AuthData
     setAuthData: (authData: AuthData) => void
     login: (username: string, password: string) => Promise<ApiRequestInfo>
+    register: (username: string, password: string) => Promise<ApiRequestInfo>
     logout: () => Promise<void>
 }
 
@@ -80,7 +81,30 @@ class AuthStore implements IAuthStore {
             console.error('Logout failed', error)
         }
     }
-}
 
+    register = async (
+        username: string,
+        password: string
+    ): Promise<ApiRequestInfo> => {
+        try {
+            let registerResponse: AxiosResponse<void> =
+                await AuthService.register({
+                    username,
+                    password,
+                })
+
+            if (registerResponse.status === 200) {
+                return new ApiRequestInfo(true)
+            }
+            return new ApiRequestInfo(false, registerResponse.statusText)
+        } catch (error) {
+            const axiosError = error as AxiosError
+            return new ApiRequestInfo(
+                false,
+                axiosError.response?.data as string
+            )
+        }
+    }
+}
 const authStore = new AuthStore()
 export default authStore

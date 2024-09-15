@@ -1,4 +1,4 @@
-import { AxiosResponse } from 'axios'
+import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import qs from 'qs'
 import { ApiService } from './apiService'
 import { TokenRequest } from '../models/Requests/TokenRequest'
@@ -11,27 +11,34 @@ export class AuthService {
         tokenRequest: TokenRequest
     ): Promise<AxiosResponse<TokenResponse>> {
         const data = qs.stringify(tokenRequest)
-
-        return ApiService.api.post<TokenResponse>('/account/gettoken', data)
+        let config: AxiosRequestConfig = {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        }
+        return ApiService.api.post<TokenResponse>(
+            '/account/gettoken',
+            data,
+            config
+        )
     }
 
-    // static async register(
-    //     username: string,
-    //     email: string,
-    //     password: string
-    // ): Promise<AxiosResponse<AuthResponse>> {
-    //     return ApiService.api.post<AuthResponse>('/Account/LocalSignUp', {
-    //         name: username,
-    //         email,
-    //         password,
-    //     })
-    // }
+    static async register<RegisterRequest>(
+        registerRequest: RegisterRequest
+    ): Promise<AxiosResponse> {
+        return ApiService.api.post('/account/register', registerRequest)
+    }
 
     static async logout<logOutRequest>(
         logOutRequest: LogOutRequest
     ): Promise<void> {
+        let config: AxiosRequestConfig = {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        }
         const data = qs.stringify(logOutRequest)
-        ApiService.api.post('/account/logout', data)
+        ApiService.api.post('/account/logout', data, config)
     }
 
     // static async regenerateNewTokens(

@@ -22,7 +22,7 @@ export const PasswordField: React.FC<Props> = ({ name, onChange, value }) => {
                 value={value}
                 onChange={onChange}
             />
-            <ImgButton onClick={buttonOnClickHandler}>
+            <ImgButton type="button" onClick={buttonOnClickHandler}>
                 <StyledImg
                     src={isTextHidden ? EyeOff : EyeEmpty}
                     alt="Show/hidden password"

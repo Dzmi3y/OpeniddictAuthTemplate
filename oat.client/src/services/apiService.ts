@@ -5,10 +5,8 @@ export class ApiService {
     static {
         ApiService.api = axios.create({
             baseURL: 'https://localhost:444',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
         })
+
         ApiService.api.interceptors.request.use(
             (config: InternalAxiosRequestConfig) => {
                 const token = authStore.authData.accessToken
