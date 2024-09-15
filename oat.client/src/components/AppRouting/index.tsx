@@ -1,16 +1,17 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
-import { privateRoutes, publicRoutes, RouteNames } from '../../router'
-import React from 'react'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { IRoute, privateRoutes, publicRoutes, RouteNames } from '../../router'
+import React, { useEffect, useState } from 'react'
 import { IAuthStore } from '../../store/AuthStore'
 import { inject, observer } from 'mobx-react'
 
-const AppRouter: React.FC<{ authStore: IAuthStore }> = inject('authStore')(
+const AppRouter: React.FC<{ authStore?: IAuthStore }> = inject('authStore')(
     observer(({ authStore }) => {
-        const authToken = false //todo
+        const token = authStore?.authData.accessToken
+        const routes = token ? privateRoutes : publicRoutes
 
-        return authToken ? (
+        return (
             <Routes>
-                {privateRoutes.map((route) => (
+                {routes.map((route) => (
                     <Route
                         path={route.path}
                         element={<route.element />}
@@ -19,21 +20,13 @@ const AppRouter: React.FC<{ authStore: IAuthStore }> = inject('authStore')(
                 ))}
                 <Route
                     path={RouteNames.ANY}
-                    element={<Navigate to={RouteNames.HOME} replace />}
-                />
-            </Routes>
-        ) : (
-            <Routes>
-                {publicRoutes.map((route) => (
-                    <Route
-                        path={route.path}
-                        element={<route.element />}
-                        key={route.path}
-                    />
-                ))}
-                <Route
-                    path={RouteNames.ANY}
-                    element={<Navigate to={RouteNames.LOGIN} replace />}
+                    element={
+                        token ? (
+                            <Navigate to={RouteNames.HOME} replace />
+                        ) : (
+                            <Navigate to={RouteNames.LOGIN} replace />
+                        )
+                    }
                 />
             </Routes>
         )

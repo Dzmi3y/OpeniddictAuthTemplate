@@ -19,9 +19,11 @@ import { ErrorMessage } from '../../components/ErrorMessage'
 import { inject, observer } from 'mobx-react'
 import { IAuthStore } from '../../store/AuthStore'
 import { LoginData } from '../../models/LoginData'
+import { useNavigate } from 'react-router-dom'
 
 const LoginPage: React.FC<{ authStore: IAuthStore }> = inject('authStore')(
     observer(({ authStore }) => {
+        const navigate = useNavigate()
         const [formData, setFormData] = useState<LoginData>({
             username: '',
             password: '',
@@ -48,7 +50,7 @@ const LoginPage: React.FC<{ authStore: IAuthStore }> = inject('authStore')(
                     formData.password
                 )
                 if (requestInfo.isSuccessful) {
-                    //todo redirect to Homepage
+                    navigate(RouteNames.HOME)
                 } else {
                     setErrorMessage(requestInfo.message)
                 }

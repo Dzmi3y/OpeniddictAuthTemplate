@@ -16,10 +16,10 @@ class AuthStore implements IAuthStore {
     private _authData: AuthData
 
     constructor() {
-        makeAutoObservable(this)
         this._authData = localStorage.authData
             ? JSON.parse(localStorage.authData)
             : {}
+        makeAutoObservable(this)
     }
 
     get authData(): AuthData {

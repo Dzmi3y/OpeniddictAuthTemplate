@@ -1,4 +1,10 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
+import axios, {
+    AxiosInstance,
+    AxiosRequestConfig,
+    InternalAxiosRequestConfig,
+} from 'axios'
+import { AuthService } from './authService'
+import authStore from '../store/AuthStore'
 export class ApiService {
     static api: AxiosInstance
     static {
@@ -8,18 +14,18 @@ export class ApiService {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
         })
-        // ApiService.api.interceptors.request.use(
-        //     (config: AxiosRequestConfig) => {
-        //         const tokens = JSON.parse(
-        //             localStorage.getItem(StorageKeys.Token)
-        //         )
-        //         if (tokens) {
-        //             const { token } = tokens
-        //             config.headers.Authorization = `Bearer ${token}`
-        //         }
-        //         return config
-        //     }
-        // )
+        ApiService.api.interceptors.request.use(
+            (config: InternalAxiosRequestConfig) => {
+                const token = authStore.authData.accessToken
+                if (!!token && token !== '') {
+                    config.headers.Authorization = `Bearer ${token}`
+                    console.log(token)
+                } else {
+                    console.error('Token is invalide')
+                }
+                return config
+            }
+        )
 
         // ApiService.api.interceptors.response.use(
         //     (response) => {
