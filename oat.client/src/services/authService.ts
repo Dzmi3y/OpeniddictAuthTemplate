@@ -41,12 +41,6 @@ export class AuthService {
         ApiService.api.post('/account/logout', data, config)
     }
 
-    // static async regenerateNewTokens(
-    //     refreshToken: string
-    // ): Promise<AxiosResponse<AuthResponse>> {
-    //     return ApiService.api.post('/Account/Refresh', { refreshToken })
-    // }
-
     static async getAccountInfo(): Promise<AxiosResponse<UserDataResponse>> {
         return ApiService.api.get<UserDataResponse>('/account/getuserdata')
     }

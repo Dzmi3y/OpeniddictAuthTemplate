@@ -21,7 +21,7 @@ import { IAuthStore } from '../../store/AuthStore'
 import { LoginData } from '../../models/LoginData'
 import { useNavigate } from 'react-router-dom'
 
-const LoginPage: React.FC<{ authStore: IAuthStore }> = inject('authStore')(
+const LoginPage: React.FC<{ authStore?: IAuthStore }> = inject('authStore')(
     observer(({ authStore }) => {
         const navigate = useNavigate()
         const [formData, setFormData] = useState<LoginData>({
@@ -45,14 +45,14 @@ const LoginPage: React.FC<{ authStore: IAuthStore }> = inject('authStore')(
             e.preventDefault()
 
             if (dataValidation(formData)) {
-                let requestInfo = await authStore.login(
+                let requestInfo = await authStore?.login(
                     formData.username,
                     formData.password
                 )
-                if (requestInfo.isSuccessful) {
+                if (requestInfo?.isSuccessful) {
                     navigate(RouteNames.HOME)
                 } else {
-                    setErrorMessage(requestInfo.message)
+                    setErrorMessage(requestInfo?.message ?? '')
                 }
             }
         }

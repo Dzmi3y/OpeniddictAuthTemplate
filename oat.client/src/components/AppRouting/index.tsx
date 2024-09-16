@@ -8,7 +8,6 @@ const AppRouter: React.FC<{ authStore?: IAuthStore }> = inject('authStore')(
     observer(({ authStore }) => {
         const token = authStore?.authData.accessToken
         const routes = token ? privateRoutes : publicRoutes
-
         return (
             <Routes>
                 {routes.map((route) => (

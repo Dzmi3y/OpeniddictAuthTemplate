@@ -1,5 +1,15 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
+import axios, {
+    AxiosInstance,
+    AxiosRequestConfig,
+    AxiosResponse,
+    InternalAxiosRequestConfig,
+} from 'axios'
 import authStore from '../store/AuthStore'
+import AuthStore from '../store/AuthStore'
+import { TokenRequest } from '../models/Requests/TokenRequest'
+import { TokenResponse } from '../models/Responses/TokenResponse'
+import { AuthService } from './authService'
+import { AuthData } from '../models/AuthData'
 export class ApiService {
     static api: AxiosInstance
     static {
@@ -19,41 +29,44 @@ export class ApiService {
             }
         )
 
-        // ApiService.api.interceptors.response.use(
-        //     (response) => {
-        //         return response
-        //     },
-        //     (error: any) => {
-        //         const { status } = error.response
-        //         const { config } = error
-        //         if (status === 401 && !config._retry) {
-        //             const tokens = JSON.parse(
-        //                 localStorage.getItem(StorageKeys.Token)
-        //             )
-        //             config._retry = true
-        //             return AuthService.regenerateNewTokens(tokens.refreshToken)
-        //                 .then((payload) => {
-        //                     const { accessToken, refreshToken } = payload.data
-        //                     localStorage.setItem(
-        //                         StorageKeys.Token,
-        //                         JSON.stringify({
-        //                             token: accessToken,
-        //                             refreshToken,
-        //                         })
-        //                     )
-        //                     store.dispatch(
-        //                         setTokenAction({
-        //                             token: accessToken,
-        //                             refreshToken,
-        //                         })
-        //                     )
-        //                     config.headers.Authorization = `Bearer ${payload?.data?.accessToken}`
-        //                     return ApiService.api(config)
-        //                 })
-        //                 .catch((error) => Promise.reject(error))
-        //         }
-        //         return Promise.reject(error)
-        //     }
-        // )
+        ApiService.api.interceptors.response.use(
+            (response) => {
+                return response
+            },
+            async (error: any) => {
+                const { status } = error.response
+                const { config } = error
+
+                if (status === 401 && !config._retry) {
+                    try {
+                        config._retry = true
+                        const tokenRequest: TokenRequest = {
+                            username: '',
+                            password: '',
+                            grant_type: 'refresh_token',
+                            client_id: 'default-client',
+                            client_secret:
+                                '499D56FA-B47B-5199-BA61-B298D431C318',
+                            refresh_token: AuthStore.authData.refreshToken,
+                        }
+
+                        let axiosResponse: AxiosResponse<TokenResponse> =
+                            await AuthService.login(tokenRequest)
+                        if (axiosResponse.status === 200) {
+                            let authData: AuthData = {
+                                accessToken: axiosResponse.data.access_token,
+                                refreshToken: axiosResponse.data.refresh_token,
+                            }
+                            AuthStore.setAuthData(authData)
+                            config.headers.Authorization = `Bearer ${authData.accessToken}`
+                            return ApiService.api(config)
+                        }
+                    } catch (error) {
+                        Promise.reject(error)
+                    }
+                }
+                return Promise.reject(error)
+            }
+        )
     }
 }

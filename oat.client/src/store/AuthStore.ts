@@ -6,6 +6,7 @@ import { AxiosError, AxiosResponse } from 'axios'
 import { TokenResponse } from '../models/Responses/TokenResponse'
 import ApiRequestInfo from '../models/ApiRequestInfo'
 import { LogOutRequest } from '../models/Requests/LogOutRequest'
+import { UserDataResponse } from '../models/Responses/UserDataResponse'
 
 export interface IAuthStore {
     authData: AuthData
@@ -13,6 +14,7 @@ export interface IAuthStore {
     login: (username: string, password: string) => Promise<ApiRequestInfo>
     register: (username: string, password: string) => Promise<ApiRequestInfo>
     logout: () => Promise<void>
+    getAccountInfo: () => Promise<AxiosResponse<UserDataResponse>>
 }
 
 class AuthStore implements IAuthStore {
@@ -103,6 +105,15 @@ class AuthStore implements IAuthStore {
                 false,
                 axiosError.response?.data as string
             )
+        }
+    }
+
+    getAccountInfo = async (): Promise<AxiosResponse<UserDataResponse>> => {
+        try {
+            return await AuthService.getAccountInfo()
+        } catch (error) {
+            console.error(error)
+            return Promise.reject(error)
         }
     }
 }
