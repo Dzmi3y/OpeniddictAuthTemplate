@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { AuthService } from '../../services/authService'
 import { IAuthStore } from '../../store/AuthStore'
 import { inject, observer } from 'mobx-react'
 import { RouteNames } from '../../router'

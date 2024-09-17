@@ -10,11 +10,28 @@ import { TokenRequest } from '../models/Requests/TokenRequest'
 import { TokenResponse } from '../models/Responses/TokenResponse'
 import { AuthService } from './authService'
 import { AuthData } from '../models/AuthData'
+import { config } from '../config'
 export class ApiService {
     static api: AxiosInstance
+    static getTokenRequest(username?: string, password?: string): TokenRequest {
+        let grant_type =
+            username && password
+                ? config.grant_type_password
+                : config.grant_type_refresh_token
+
+        return {
+            username: username ?? '',
+            password: password ?? '',
+            grant_type: grant_type,
+            client_id: config.client_id,
+            client_secret: config.client_secret,
+            refresh_token: AuthStore.authData?.refreshToken ?? '',
+        }
+    }
+
     static {
         ApiService.api = axios.create({
-            baseURL: 'https://localhost:444',
+            baseURL: config.baseApiUrl,
         })
 
         ApiService.api.interceptors.request.use(
@@ -40,15 +57,8 @@ export class ApiService {
                 if (status === 401 && !config._retry) {
                     try {
                         config._retry = true
-                        const tokenRequest: TokenRequest = {
-                            username: '',
-                            password: '',
-                            grant_type: 'refresh_token',
-                            client_id: 'default-client',
-                            client_secret:
-                                '499D56FA-B47B-5199-BA61-B298D431C318',
-                            refresh_token: AuthStore.authData.refreshToken,
-                        }
+                        const tokenRequest: TokenRequest =
+                            this.getTokenRequest()
 
                         let axiosResponse: AxiosResponse<TokenResponse> =
                             await AuthService.login(tokenRequest)

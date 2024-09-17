@@ -7,6 +7,8 @@ import { TokenResponse } from '../models/Responses/TokenResponse'
 import ApiRequestInfo from '../models/ApiRequestInfo'
 import { LogOutRequest } from '../models/Requests/LogOutRequest'
 import { UserDataResponse } from '../models/Responses/UserDataResponse'
+import { config } from '../config'
+import { ApiService } from '../services/apiService'
 
 export interface IAuthStore {
     authData: AuthData
@@ -41,14 +43,10 @@ class AuthStore implements IAuthStore {
         password: string
     ): Promise<ApiRequestInfo> => {
         try {
-            const tokenRequest: TokenRequest = {
-                username: username,
-                password: password,
-                grant_type: 'password',
-                client_id: 'default-client',
-                client_secret: '499D56FA-B47B-5199-BA61-B298D431C318',
-                refresh_token: '',
-            }
+            const tokenRequest: TokenRequest = ApiService.getTokenRequest(
+                username,
+                password
+            )
             let axiosResponse: AxiosResponse<TokenResponse> =
                 await AuthService.login(tokenRequest)
             if (axiosResponse.status === 200) {
@@ -74,7 +72,7 @@ class AuthStore implements IAuthStore {
     logout = async (): Promise<void> => {
         try {
             const logOutRequest: LogOutRequest = {
-                client_secret: '499D56FA-B47B-5199-BA61-B298D431C318',
+                client_secret: config.client_secret,
             }
 
             await AuthService.logout(logOutRequest)
